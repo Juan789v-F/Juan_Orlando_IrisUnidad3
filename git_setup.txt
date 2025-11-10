@@ -1,0 +1,28 @@
+# Configuración de Git para el proyecto
+
+# Información del autor
+nombre="Juan Daniel Flores Espinoza"
+email="juan.daniel.flores.espinoza@example.com"
+
+# Configuración global de Git (descomentar cuando Git esté disponible)
+# git config --global user.name "$nombre"
+# git config --global user.email "$email"
+
+# Configuración adicional recomendada
+# git config --global init.defaultBranch main
+# git config --global core.autocrlf true
+# git config --global pull.rebase false
+
+# Conexión con repositorio remoto (ejecutar cuando Git esté disponible)
+# git remote add origin https://github.com/Juan789v-F/JuanDanielFloresEspinozaUnidad3.git
+
+# Verificación de configuración
+# git config --list
+
+# Instrucciones para cuando Git esté disponible:
+# 1. Ejecutar: git init
+# 2. Ejecutar: git config --global user.name "Juan Daniel Flores Espinoza"
+# 3. Ejecutar: git config --global user.email "juan.daniel.flores.espinoza@example.com"
+# 4. Ejecutar: git remote add origin https://github.com/Juan789v-F/JuanDanielFloresEspinozaUnidad3.git
+# 5. Ejecutar: bash git_commits_script.sh
+# 6. Ejecutar: git push -u origin main

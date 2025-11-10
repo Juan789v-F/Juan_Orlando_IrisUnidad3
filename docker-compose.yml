@@ -1,0 +1,124 @@
+version: '3.8'
+
+services:
+  # Servicio principal de la aplicación Node.js
+  app:
+    build: .
+    container_name: tecnologia-web-app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - JWT_SECRET=tecnologia_web_secret_key_2024_unidad3_production
+      - JWT_EXPIRE=7d
+      - MONGODB_URI=mongodb://mongo:27017/tecnologia_web_db
+    volumes:
+      - ./logs:/app/logs
+    depends_on:
+      - mongo
+      - redis
+    networks:
+      - tecnologia-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Base de datos MongoDB
+  mongo:
+    image: mongo:6.0
+    container_name: tecnologia-mongo
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=tecnologia_password_2024
+      - MONGO_INITDB_DATABASE=tecnologia_web_db
+    volumes:
+      - mongo_data:/data/db
+      - ./docker/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - tecnologia-network
+    restart: unless-stopped
+
+  # Redis para caché y sesiones
+  redis:
+    image: redis:7-alpine
+    container_name: tecnologia-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - tecnologia-network
+    restart: unless-stopped
+
+  # Nginx como proxy inverso
+  nginx:
+    image: nginx:alpine
+    container_name: tecnologia-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - app
+    networks:
+      - tecnologia-network
+    restart: unless-stopped
+
+  # Prometheus para monitoreo
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: tecnologia-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - tecnologia-network
+    restart: unless-stopped
+
+  # Grafana para visualización
+  grafana:
+    image: grafana/grafana:latest
+    container_name: tecnologia-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=tecnologia_grafana_2024
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - tecnologia-network
+    restart: unless-stopped
+
+volumes:
+  mongo_data:
+    driver: local
+  redis_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+networks:
+  tecnologia-network:
+    driver: bridge
+    name: tecnologia-network
