@@ -1,124 +1,59 @@
 version: '3.8'
 
 services:
-  # Servicio principal de la aplicación Node.js
-  app:
-    build: .
-    container_name: tecnologia-web-app
-    ports:
-      - "3000:3000"
+  database:
+    image: postgres:15-alpine
+    container_name: darksouls-db
     environment:
-      - NODE_ENV=production
-      - PORT=3000
-      - JWT_SECRET=tecnologia_web_secret_key_2024_unidad3_production
-      - JWT_EXPIRE=7d
-      - MONGODB_URI=mongodb://mongo:27017/tecnologia_web_db
+      POSTGRES_DB: darksouls_wiki
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     volumes:
-      - ./logs:/app/logs
-    depends_on:
-      - mongo
-      - redis
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
     networks:
-      - tecnologia-network
-    restart: unless-stopped
+      - darksouls-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
-  # Base de datos MongoDB
-  mongo:
-    image: mongo:6.0
-    container_name: tecnologia-mongo
-    ports:
-      - "27017:27017"
+  backend:
+    build: ./backend
+    container_name: darksouls-backend
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=tecnologia_password_2024
-      - MONGO_INITDB_DATABASE=tecnologia_web_db
-    volumes:
-      - mongo_data:/data/db
-      - ./docker/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-    networks:
-      - tecnologia-network
-    restart: unless-stopped
-
-  # Redis para caché y sesiones
-  redis:
-    image: redis:7-alpine
-    container_name: tecnologia-redis
+      DATABASE_URL: postgresql://postgres:postgres@database:5432/darksouls_wiki
+      JWT_SECRET: your-secret-key-change-in-production-min-32-chars
+      YOUTUBE_API_KEY: ${YOUTUBE_API_KEY}
+      CORS_ORIGIN: http://localhost:5173
+      PORT: 3000
     ports:
-      - "6379:6379"
-    command: redis-server --appendonly yes
-    volumes:
-      - redis_data:/data
+      - "3002:3000"
     networks:
-      - tecnologia-network
-    restart: unless-stopped
-
-  # Nginx como proxy inverso
-  nginx:
-    image: nginx:alpine
-    container_name: tecnologia-nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./ssl:/etc/nginx/ssl:ro
+      - darksouls-network
     depends_on:
-      - app
-    networks:
-      - tecnologia-network
-    restart: unless-stopped
+      database:
+        condition: service_healthy
 
-  # Prometheus para monitoreo
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: tecnologia-prometheus
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:3002
+    container_name: darksouls-frontend
     ports:
-      - "9090:9090"
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - prometheus_data:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--storage.tsdb.retention.time=200h'
-      - '--web.enable-lifecycle'
+      - "5173:5173"
     networks:
-      - tecnologia-network
-    restart: unless-stopped
-
-  # Grafana para visualización
-  grafana:
-    image: grafana/grafana:latest
-    container_name: tecnologia-grafana
-    ports:
-      - "3001:3000"
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=tecnologia_grafana_2024
-    volumes:
-      - grafana_data:/var/lib/grafana
-    networks:
-      - tecnologia-network
-    restart: unless-stopped
+      - darksouls-network
+    depends_on:
+      - backend
 
 volumes:
-  mongo_data:
-    driver: local
-  redis_data:
-    driver: local
-  prometheus_data:
-    driver: local
-  grafana_data:
-    driver: local
+  postgres_data:
 
 networks:
-  tecnologia-network:
+  darksouls-network:
     driver: bridge
-    name: tecnologia-network

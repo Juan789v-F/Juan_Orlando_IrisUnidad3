@@ -1,186 +1,292 @@
-# Aplicación Web de Tecnologías de Información
+# 🔥 Dark Souls Wiki
 
-## Descripción
-Aplicación web desarrollada con Node.js, Express y Docker que implementa mecanismos de seguridad, servicios web propios y de terceros, con integración completa de contenedores para despliegue en producción.
+Una aplicación web mini-wiki con temática de Dark Souls que permite a los usuarios explorar información sobre jefes del juego, ver videos relacionados de YouTube y participar mediante comentarios autenticados.
 
-## Características
+## ✨ Características Visuales
 
-### 🔒 Mecanismos de Seguridad
-- **Autenticación JWT**: Sistema de autenticación basado en tokens JSON Web Token
-- **Encriptación de contraseñas**: Uso de bcrypt para hash seguro de contraseñas
-- **Validación de datos**: Validación de entrada con express-validator
-- **Rate limiting**: Limitación de peticiones para prevenir ataques DDoS
-- **Helmet**: Seguridad de headers HTTP
-- **CORS**: Control de acceso entre domininos
-- **HTTPS ready**: Configuración preparada para SSL/TLS
+### 🎨 Diseño Profesional
+- **Hero Banner Animado**: Banner principal con imagen de fondo, efectos de brillo y estadísticas
+- **Tema Dark Souls Auténtico**: Paleta de colores oscura con acentos dorados inspirados en el juego
+- **Animaciones Suaves**: Transiciones y efectos hover en todos los elementos
+- **Efectos de Iluminación**: Sombras doradas y efectos de resplandor en elementos clave
+- **Tipografía Medieval**: Fuentes Cinzel y MedievalSharp para títulos épicos
 
-### 🌐 Web Services de Terceros
-- **Servicio de Clima**: API de clima con datos de temperatura, humedad y pronóstico
-- **Servicio de Noticias**: API de noticias con categorías de tecnología
+### 🎮 Características Funcionales
 
-### ⚙️ Web Services Propios
-- **Gestión de Usuarios**: CRUD completo de usuarios con roles
-- **Gestión de Productos**: CRUD de productos tecnológicos
-- **Autenticación**: Sistema completo de registro y login
-- **API RESTful**: Arquitectura RESTful con endpoints documentados
+- **Exploración de Jefes**: Visualiza una lista de jefes icónicos con cards interactivas
+- **Detalles Completos**: Accede al lore completo de cada jefe con diseño inmersivo
+- **Videos de YouTube**: Integración con YouTube API para mostrar videos relevantes
+- **Sistema de Comentarios**: Los usuarios autenticados pueden dejar comentarios
+- **Autenticación Segura**: Sistema completo de registro y login con JWT y bcrypt
+- **Arquitectura Dockerizada**: Toda la aplicación se ejecuta en contenedores Docker
+- **Diseño Responsive**: Optimizado para desktop, tablet y móvil
 
-### 🐳 Docker y DevOps
-- **Contenedorización**: Aplicación completamente contenedorizada
-- **Orquestación**: Docker Compose con múltiples servicios
-- **Base de datos**: MongoDB en contenedor
-- **Cache**: Redis para mejorar rendimiento
-- **Proxy reverso**: Nginx como balanceador de carga
-- **Monitoreo**: Prometheus y Grafana para métricas
-- **SSL/TLS**: Configuración preparada para certificados SSL
+## 📸 Capturas de Pantalla
 
-## Tecnologías Utilizadas
+### Página Principal
+- Hero banner con efectos de fuego animados
+- Grid de jefes con imágenes y efectos hover
+- Navegación con tema Dark Souls
 
-- **Backend**: Node.js, Express.js
-- **Frontend**: HTML5, CSS3, JavaScript Vanilla
-- **Base de datos**: MongoDB
-- **Cache**: Redis
-- **Contenedores**: Docker, Docker Compose
-- **Monitoreo**: Prometheus, Grafana
-- **Proxy**: Nginx
-- **Seguridad**: JWT, bcrypt, Helmet, CORS
+### Detalles de Jefe
+- Imagen grande del jefe con borde dorado brillante
+- Lore completo con diseño inmersivo
+- Videos relacionados de YouTube
+- Sistema de comentarios integrado
 
-## Instalación y Uso
+### Características de Diseño
+- **Efectos de Hover**: Las cards de jefes se elevan y brillan al pasar el mouse
+- **Animaciones**: Títulos con efecto de resplandor pulsante
+- **Iconos Temáticos**: Emojis de fuego 🔥, espadas ⚔️ y sol ☀️
+- **Footer Mejorado**: Footer con múltiples secciones y enlaces
 
-### Requisitos Previos
-- Docker y Docker Compose instalados
-- Puerto 80, 3000, 9090 y 3001 disponibles
+## 🏗️ Stack Tecnológico
 
-### Despliegue con Docker
+### Frontend
+- React 18 con Vite
+- React Router para navegación
+- Axios para peticiones HTTP
+- CSS personalizado con tema Dark Souls
 
-1. Clonar el repositorio:
+### Backend
+- Node.js con Express
+- PostgreSQL para base de datos
+- JWT para autenticación
+- Bcrypt para hashing de contraseñas
+- Axios para integración con YouTube API
+
+### DevOps
+- Docker & Docker Compose
+- Nginx para servir el frontend
+- PostgreSQL 15 Alpine
+
+## 📋 Requisitos Previos
+
+- Docker Desktop instalado
+- Docker Compose instalado
+- YouTube API Key (opcional, para funcionalidad de videos)
+
+## 🚀 Instalación y Despliegue
+
+### 1. Clonar el repositorio
+
 ```bash
-git clone https://github.com/Juan789v-F/JuanDanielFloresEspinozaUnidad3.git
-cd JuanDanielFloresEspinozaUnidad3
+git clone <repository-url>
+cd darksouls-wiki
 ```
 
-2. Construir y ejecutar los contenedores:
+### 2. Configurar YouTube API Key (Opcional)
+
+Para habilitar la funcionalidad de videos de YouTube:
+
+1. Ve a [Google Cloud Console](https://console.cloud.google.com/)
+2. Crea un nuevo proyecto o selecciona uno existente
+3. Habilita la YouTube Data API v3
+4. Crea credenciales (API Key)
+5. Copia tu API key
+
+### 3. Configurar Variables de Entorno
+
+Crea un archivo `.env` en la raíz del proyecto:
+
 ```bash
-docker-compose up -d
+YOUTUBE_API_KEY=tu-api-key-de-youtube-aqui
 ```
 
-3. La aplicación estará disponible en:
-- Aplicación principal: http://localhost
-- Monitoreo (Grafana): http://localhost:3001
-- Métricas (Prometheus): http://localhost:9090
+**Nota**: Si no configuras la YouTube API key, la aplicación funcionará normalmente pero no mostrará videos.
 
-### Desarrollo Local
+### 4. Desplegar con Docker Compose
 
-1. Instalar dependencias:
 ```bash
-npm install
+docker-compose up --build
 ```
 
-2. Configurar variables de entorno:
-```bash
-cp .env.example .env
-# Editar .env con tus configuraciones
+Este comando:
+- Construye las imágenes de Docker para frontend y backend
+- Inicia PostgreSQL y ejecuta el script de inicialización
+- Inicia el backend en el puerto 3000
+- Inicia el frontend en el puerto 5173
+
+### 5. Acceder a la Aplicación
+
+Una vez que todos los contenedores estén corriendo:
+
+- **Frontend**: http://localhost:5173
+- **Backend API**: http://localhost:3000
+- **Database**: localhost:5432
+
+## 🎯 Uso de la Aplicación
+
+### Explorar Jefes
+1. Abre http://localhost:5173
+2. Verás una lista de jefes de Dark Souls
+3. Haz clic en cualquier jefe para ver sus detalles completos
+
+### Registrarse y Comentar
+1. Haz clic en "Register" en la navegación
+2. Crea una cuenta con email y contraseña
+3. Serás redirigido automáticamente después del registro
+4. Navega a la página de un jefe
+5. Deja un comentario en la sección de comentarios
+
+### Ver Videos
+- Los videos de YouTube aparecen automáticamente en la página de detalles de cada jefe
+- Haz clic en cualquier video para verlo en YouTube
+
+## 📁 Estructura del Proyecto
+
+```
+darksouls-wiki/
+├── backend/
+│   ├── config/
+│   │   └── database.js          # Configuración de PostgreSQL
+│   ├── controllers/
+│   │   ├── authController.js    # Lógica de autenticación
+│   │   ├── bossController.js    # Lógica de jefes
+│   │   └── commentController.js # Lógica de comentarios
+│   ├── middleware/
+│   │   └── auth.js              # Middleware JWT
+│   ├── routes/
+│   │   ├── auth.js              # Rutas de autenticación
+│   │   ├── bosses.js            # Rutas de jefes
+│   │   └── comments.js          # Rutas de comentarios
+│   ├── services/
+│   │   └── youtubeService.js    # Integración YouTube API
+│   ├── init.sql                 # Script de inicialización DB
+│   ├── server.js                # Punto de entrada
+│   ├── Dockerfile
+│   └── package.json
+├── frontend/
+│   ├── src/
+│   │   ├── components/          # Componentes React
+│   │   ├── contexts/            # Context API (Auth)
+│   │   ├── pages/               # Páginas de la aplicación
+│   │   ├── services/            # Servicios (API client)
+│   │   ├── App.jsx              # Componente principal
+│   │   ├── main.jsx             # Punto de entrada
+│   │   └── index.css            # Estilos globales
+│   ├── Dockerfile
+│   ├── nginx.conf
+│   ├── vite.config.js
+│   └── package.json
+├── docker-compose.yml
+└── README.md
 ```
 
-3. Ejecutar en modo desarrollo:
-```bash
-npm run dev
-```
-
-## Endpoints de la API
+## 🔌 API Endpoints
 
 ### Autenticación
-- `POST /api/auth/register` - Registro de usuarios
-- `POST /api/auth/login` - Inicio de sesión
-- `GET /api/auth/verify` - Verificar token
+- `POST /api/auth/register` - Registrar nuevo usuario
+- `POST /api/auth/login` - Iniciar sesión
 
-### Usuarios
-- `GET /api/users` - Obtener todos los usuarios (Admin)
-- `GET /api/users/:id` - Obtener usuario específico
-- `PUT /api/users/:id` - Actualizar usuario
-- `DELETE /api/users/:id` - Eliminar usuario (Admin)
+### Jefes
+- `GET /api/bosses` - Obtener lista de jefes
+- `GET /api/bosses/:id` - Obtener detalles de un jefe
+- `GET /api/bosses/:id/videos` - Obtener videos de YouTube de un jefe
 
-### Productos
-- `GET /api/products` - Listar productos
-- `GET /api/products/:id` - Obtener producto específico
-- `POST /api/products` - Crear producto (Admin)
-- `PUT /api/products/:id` - Actualizar producto (Admin)
-- `DELETE /api/products/:id` - Eliminar producto (Admin)
+### Comentarios
+- `GET /api/comments/:boss_id` - Obtener comentarios de un jefe
+- `POST /api/comments` - Crear comentario (requiere autenticación)
 
-### Servicios de Terceros
-- `GET /api/weather/:city` - Clima por ciudad
-- `GET /api/weather/forecast/:city` - Pronóstico 5 días
-- `GET /api/news` - Noticias de tecnología
-- `GET /api/news/search/:keyword` - Buscar noticias
+## 🔒 Seguridad
 
-## Estructura del Proyecto
+- **Contraseñas**: Hasheadas con bcrypt (10 salt rounds)
+- **JWT**: Tokens con expiración de 24 horas
+- **CORS**: Configurado para aceptar solo peticiones del frontend
+- **Variables de Entorno**: Credenciales sensibles nunca en el código
+- **SQL Injection**: Prevención mediante queries parametrizadas
 
-```
-.
-├── docker-compose.yml      # Configuración de servicios Docker
-├── Dockerfile              # Imagen de la aplicación Node.js
-├── nginx/
-│   └── nginx.conf         # Configuración de Nginx
-├── docker/
-│   └── prometheus.yml     # Configuración de Prometheus
-├── public/                # Archivos estáticos del frontend
-│   ├── index.html
-│   ├── css/
-│   │   └── styles.css
-│   └── js/
-│       └── app.js
-├── routes/                # Rutas de la API
-│   ├── auth.js
-│   ├── users.js
-│   ├── products.js
-│   ├── weather.js
-│   └── news.js
-├── middleware/            # Middleware de Express
-├── models/               # Modelos de datos
-├── logs/                 # Archivos de log
-├── ssl/                  # Certificados SSL
-├── server.js             # Servidor principal
-├── package.json          # Dependencias del proyecto
-├── .env                  # Variables de entorno
-└── README.md            # Este archivo
+## 🛠️ Comandos Útiles
+
+### Detener los contenedores
+```bash
+docker-compose down
 ```
 
-## Seguridad
+### Ver logs
+```bash
+docker-compose logs -f
+```
 
-La aplicación implementa múltiples capas de seguridad:
+### Reconstruir sin caché
+```bash
+docker-compose build --no-cache
+docker-compose up
+```
 
-1. **Autenticación y Autorización**: JWT con expiración configurable
-2. **Validación de Entrada**: Validación exhaustiva de todos los datos de entrada
-3. **Encriptación**: Contraseñas hasheadas con bcrypt (12 rounds)
-4. **Rate Limiting**: Limitación de peticiones por IP
-5. **Headers de Seguridad**: Configuración de headers con Helmet
-6. **CORS**: Control de acceso entre dominios
-7. **Logs de Seguridad**: Registro de actividades sospechosas
+### Acceder a la base de datos
+```bash
+docker exec -it darksouls-db psql -U postgres -d darksouls_wiki
+```
 
-## Monitoreo y Métricas
+### Limpiar volúmenes (⚠️ elimina datos)
+```bash
+docker-compose down -v
+```
 
-- **Prometheus**: Recolección de métricas de la aplicación
-- **Grafana**: Visualización de dashboards con métricas en tiempo real
-- **Health Checks**: Endpoints de salud para monitoreo
-- **Logs Centralizados**: Sistema de logging estructurado
+## 🎨 Personalización
 
-## Contribuir
+### Agregar Más Jefes
+Edita `backend/init.sql` y agrega más registros en la tabla `bosses`:
+
+```sql
+INSERT INTO bosses (name, short_description, lore, image_url) VALUES
+('Boss Name', 'Short description', 'Full lore text', 'https://image-url.com');
+```
+
+### Cambiar Tema de Colores
+Edita las variables CSS en `frontend/src/index.css`:
+
+```css
+:root {
+  --bg-primary: #0a0a0a;
+  --accent-gold: #d4af37;
+  /* ... más variables */
+}
+```
+
+## 🐛 Troubleshooting
+
+### El backend no se conecta a la base de datos
+- Verifica que el contenedor de PostgreSQL esté corriendo: `docker ps`
+- Revisa los logs: `docker-compose logs database`
+- El backend tiene retry logic, espera unos segundos
+
+### Los videos de YouTube no aparecen
+- Verifica que configuraste la `YOUTUBE_API_KEY` en el archivo `.env`
+- Verifica que la API key es válida en Google Cloud Console
+- Revisa los logs del backend: `docker-compose logs backend`
+
+### Error de CORS
+- Verifica que `CORS_ORIGIN` en docker-compose.yml coincida con la URL del frontend
+- Por defecto: `http://localhost:5173`
+
+## 📝 Datos de Ejemplo
+
+La aplicación viene precargada con 4 jefes icónicos:
+- Artorias the Abysswalker
+- Ornstein and Smough
+- Gwyn, Lord of Cinder
+- Sif, the Great Grey Wolf
+
+## 🤝 Contribuir
 
 1. Fork el proyecto
-2. Crear una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
 3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
 4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abrir un Pull Request
+5. Abre un Pull Request
 
-## Licencia
+## 📄 Licencia
 
-Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
+Este proyecto es de código abierto y está disponible bajo la licencia ISC.
 
-## Autor
+## 🙏 Agradecimientos
 
-**Juan Daniel Flores Espinoza**
-- GitHub: [@Juan789v-F](https://github.com/Juan789v-F)
-- Proyecto: [JuanDanielFloresEspinozaUnidad3](https://github.com/Juan789v-F/JuanDanielFloresEspinozaUnidad3)
+- FromSoftware por crear Dark Souls
+- La comunidad de Dark Souls por mantener viva la llama
+- Unsplash por las imágenes de ejemplo
 
 ---
 
-**Nota**: Este proyecto fue desarrollado como parte de las actividades académicas de la Unidad 3 de Tecnologías de Información.
+**Praise the Sun!** ☀️
