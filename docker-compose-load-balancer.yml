@@ -1,0 +1,132 @@
+version: '3.8'
+
+services:
+  # Base de datos PostgreSQL
+  database:
+    image: postgres:15-alpine
+    container_name: darksouls-db
+    environment:
+      POSTGRES_DB: darksouls_wiki
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - darksouls-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Backend Principal
+  backend:
+    build: ./backend
+    container_name: darksouls-backend-1
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@database:5432/darksouls_wiki
+      JWT_SECRET: your-secret-key-change-in-production-min-32-chars
+      YOUTUBE_API_KEY: ${YOUTUBE_API_KEY}
+      CORS_ORIGIN: http://localhost
+      PORT: 3000
+    networks:
+      - darksouls-network
+    depends_on:
+      database:
+        condition: service_healthy
+
+  # Backend Réplica 1
+  backend-replica-1:
+    build: ./backend
+    container_name: darksouls-backend-2
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@database:5432/darksouls_wiki
+      JWT_SECRET: your-secret-key-change-in-production-min-32-chars
+      YOUTUBE_API_KEY: ${YOUTUBE_API_KEY}
+      CORS_ORIGIN: http://localhost
+      PORT: 3000
+    networks:
+      - darksouls-network
+    depends_on:
+      database:
+        condition: service_healthy
+
+  # Backend Réplica 2
+  backend-replica-2:
+    build: ./backend
+    container_name: darksouls-backend-3
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@database:5432/darksouls_wiki
+      JWT_SECRET: your-secret-key-change-in-production-min-32-chars
+      YOUTUBE_API_KEY: ${YOUTUBE_API_KEY}
+      CORS_ORIGIN: http://localhost
+      PORT: 3000
+    networks:
+      - darksouls-network
+    depends_on:
+      database:
+        condition: service_healthy
+
+  # Backend de Respaldo
+  backend-backup:
+    build: ./backend
+    container_name: darksouls-backend-backup
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@database:5432/darksouls_wiki
+      JWT_SECRET: your-secret-key-change-in-production-min-32-chars
+      YOUTUBE_API_KEY: ${YOUTUBE_API_KEY}
+      CORS_ORIGIN: http://localhost
+      PORT: 3000
+    networks:
+      - darksouls-network
+    depends_on:
+      database:
+        condition: service_healthy
+
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost/api
+    container_name: darksouls-frontend
+    networks:
+      - darksouls-network
+    depends_on:
+      - backend
+
+  # Nginx Load Balancer
+  nginx:
+    image: nginx:alpine
+    container_name: darksouls-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx-load-balancer.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - nginx_logs:/var/log/nginx
+    networks:
+      - darksouls-network
+    depends_on:
+      - backend
+      - backend-replica-1
+      - backend-replica-2
+      - backend-backup
+      - frontend
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  postgres_data:
+  nginx_logs:
+
+networks:
+  darksouls-network:
+    driver: bridge

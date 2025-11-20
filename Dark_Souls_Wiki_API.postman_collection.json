@@ -1,0 +1,287 @@
+{
+  "info": {
+    "name": "Dark Souls Wiki API",
+    "description": "Colección completa de endpoints para documentación",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3002",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Seguridad - Autenticación",
+      "item": [
+        {
+          "name": "CAPTURA 1 - Registro de Usuario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"demo@darksouls.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "description": "Registra un nuevo usuario. Debe retornar 201 Created con los datos del usuario (sin password)."
+          }
+        },
+        {
+          "name": "CAPTURA 2 - Login y Obtención de Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"demo@darksouls.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Login exitoso. Retorna token JWT. IMPORTANTE: Copia el token de la respuesta y pégalo en la variable 'token' de la colección."
+          }
+        },
+        {
+          "name": "CAPTURA 5 - Validación Password Corto (Error 400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test2@darksouls.com\",\n  \"password\": \"123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "description": "Intento de registro con password muy corto. Debe retornar 400 Bad Request con mensaje de validación."
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Seguridad - Autorización",
+      "item": [
+        {
+          "name": "CAPTURA 3 - Acceso sin Token (Error 401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Intento sin token\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/bosses/1/comments",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bosses", "1", "comments"]
+            },
+            "description": "Intento de crear comentario SIN token. Debe retornar 401 Unauthorized."
+          }
+        },
+        {
+          "name": "CAPTURA 4 - Acceso con Token (Exitoso)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"¡Artorias es un jefe increíble! Muy difícil pero justo.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/bosses/1/comments",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bosses", "1", "comments"]
+            },
+            "description": "Crear comentario CON token válido. Debe retornar 201 Created con el comentario creado."
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Web Services Propios - Bosses",
+      "item": [
+        {
+          "name": "CAPTURA 8 - GET Todos los Jefes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/bosses",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bosses"]
+            },
+            "description": "Obtiene la lista completa de jefes. Debe retornar array con 4 jefes."
+          }
+        },
+        {
+          "name": "CAPTURA 9 - GET Detalles de Jefe (con Videos)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/bosses/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bosses", "1"]
+            },
+            "description": "Obtiene detalles de Artorias incluyendo videos de YouTube. CAPTURA 6 también."
+          }
+        },
+        {
+          "name": "CAPTURA 6 - GET Jefe con Videos YouTube",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/bosses/2",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bosses", "2"]
+            },
+            "description": "Obtiene Ornstein y Smough con videos de YouTube. Resalta el array 'videos'."
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Web Services Propios - Comments",
+      "item": [
+        {
+          "name": "CAPTURA 10 - GET Comentarios de Jefe",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/bosses/1/comments",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bosses", "1", "comments"]
+            },
+            "description": "Obtiene todos los comentarios del jefe Artorias."
+          }
+        },
+        {
+          "name": "CAPTURA 12 - DELETE Comentario Propio",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/comments/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "comments", "1"]
+            },
+            "description": "Elimina un comentario propio. Debe retornar 200 OK. NOTA: Cambia el ID por uno de tus comentarios."
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Casos de Error",
+      "item": [
+        {
+          "name": "Error 404 - Jefe No Existe",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/bosses/999",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bosses", "999"]
+            },
+            "description": "Intenta obtener un jefe que no existe. Debe retornar 404 Not Found."
+          }
+        },
+        {
+          "name": "Error 409 - Email Duplicado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"demo@darksouls.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "description": "Intenta registrar un email que ya existe. Debe retornar 409 Conflict."
+          }
+        },
+        {
+          "name": "Error 401 - Credenciales Inválidas",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"demo@darksouls.com\",\n  \"password\": \"wrongpassword\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Intenta login con password incorrecta. Debe retornar 401 Unauthorized."
+          }
+        }
+      ]
+    }
+  ]
+}
